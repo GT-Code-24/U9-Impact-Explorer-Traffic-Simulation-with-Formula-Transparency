@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>U9 Impact Explorer – Technische Dokumentation v3 | Gabriel Tsonyev</title>
+  <title>U9 Impact Explorer – Technische Dokumentation v3.1 | Gabriel Tsonyev</title>
   <style>
     :root {
       --navy:   #1a2332;
@@ -188,7 +188,7 @@
 <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
 <div class="doc-header">
   <h1>U9 Impact Explorer
-    <span class="badge">v3.0</span>
+    <span class="badge">v3.1</span>
     <span class="badge green">Nested Logit</span>
     <span class="badge purple">NKA</span>
     <span class="badge amber">Validierung</span>
@@ -435,9 +435,9 @@ NKV ≥ 1,5         → sehr gut</div>
 <table>
   <thead><tr><th>Tab</th><th>Inhalt</th><th>Technologie</th></tr></thead>
   <tbody>
-    <tr><td><strong>Netzbelastung</strong></td><td>Schematisches SVG-Netzdiagramm mit farbkodierter Auslastung; U9 wird bei Aktivierung eingeblendet</td><td>D3.js / SVG</td></tr>
+    <tr><td><strong>Netzbelastung</strong></td><td>Schematisches SVG-Netzdiagramm mit dynamischer Liniendicke (2–10 px) und Farbkodierung nach Auslastung (<70 % grün, 70–90 % gelb, >90 % rot); U9 wird bei Aktivierung eingeblendet</td><td>React / SVG</td></tr>
     <tr><td><strong>Modal Split</strong></td><td>Donut-Diagramm der 4 Modi mit aktuellen Prozentwerten</td><td>Recharts PieChart</td></tr>
-    <tr><td><strong>Geographische Karte</strong></td><td>OpenStreetMap-Hintergrund mit überlagerten Linienabschnitten und Auslastungsfarben</td><td>Leaflet.js</td></tr>
+    <tr><td><strong>Geographische Karte</strong></td><td>OpenStreetMap-Hintergrund mit überlagerten Linienabschnitten; dynamische Liniendicke und Farbkodierung wie Netzdiagramm; Klick auf Linie zeigt Last und Auslastung</td><td>Leaflet.js</td></tr>
     <tr><td><strong>Belastungsvergleich</strong></td><td>Balkendiagramm: Modell-Belastung vs. Baseline; Delta visualisiert</td><td>Recharts BarChart</td></tr>
     <tr><td><strong>OD-Matrix</strong></td><td>8×8-Heatmap der Verkehrsströme zwischen Zonen (farbkodiert)</td><td>CSS-Grid + Interpolation</td></tr>
     <tr><td><strong>Sensitivitätsanalyse</strong></td><td>Tornado-Diagramm: Einfluss jedes Parameters auf NKV (±10 %-Variation)</td><td>Recharts BarChart</td></tr>
@@ -571,7 +571,7 @@ NKV ≥ 1,5         → sehr gut</div>
               methodology/      — MethodologyPanel (Formeln, Vereinfachungen)
 
   hooks/      useModel.js   — verbindet UI ↔ Modell, verwaltet Feedback-Loop
-  lib/        formatters.js · formulas.js · pdfExport.js</div>
+  lib/        formatters.js · formulas.js · pdfExport.js · lineStyle.js (v3.1: shared Stil-Logik für Liniendicke/-farbe)</div>
 
 <!-- ═══════════════════════════ BEWUSSTE VEREINFACHUNGEN ═══════════════════════════ -->
 <h2>10 · Bewusste Vereinfachungen gegenüber Produktivmodell</h2>
