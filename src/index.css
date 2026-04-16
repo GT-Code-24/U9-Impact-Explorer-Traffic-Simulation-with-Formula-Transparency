@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #1a2332;
+  --color-navy-light: #243044;
+  --color-ubahn-blue: #2563eb;
+  --color-ubahn-green: #16a34a;
+  --color-ubahn-yellow: #eab308;
+  --color-ubahn-red: #dc2626;
+  --color-ubahn-orange: #ea580c;
+  --color-u1: #3d7c2a;
+  --color-u2: #c4122f;
+  --color-u3: #ec6726;
+  --color-u4: #00a984;
+  --color-u5: #b47c00;
+  --color-u6: #0065ae;
+  --color-u9: #9333ea;
+  --color-miv: #6b7280;
+  --color-oepnv: #2563eb;
+  --color-rad: #16a34a;
+  --color-fuss: #f59e0b;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.slider-track {
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  position: relative;
+}
+
+.slider-range {
+  position: absolute;
+  height: 100%;
+  background: var(--color-ubahn-blue);
+  border-radius: 2px;
+}
+
+.slider-thumb {
+  display: block;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border: 2px solid var(--color-ubahn-blue);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+.slider-thumb:hover {
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.slider-thumb:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.25);
+}

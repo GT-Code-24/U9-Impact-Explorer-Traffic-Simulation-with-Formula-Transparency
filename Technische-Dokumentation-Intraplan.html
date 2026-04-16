@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>U9 Impact Explorer – Technische Dokumentation v3 | Gabriel Tsonyev</title>
+  <style>
+    :root {
+      --navy:   #1a2332;
+      --blue:   #2563eb;
+      --purple: #7c3aed;
+      --green:  #16a34a;
+      --amber:  #d97706;
+      --red:    #dc2626;
+      --slate:  #475569;
+      --light:  #f8fafc;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.6;
+      color: #1e293b;
+      background: white;
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 18mm 17mm;
+    }
+
+    /* HEADER */
+    .doc-header { border-bottom: 3px solid var(--navy); padding-bottom: 14px; margin-bottom: 22px; }
+    .doc-header h1 { font-size: 21pt; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
+    .doc-header .subtitle { font-size: 10.5pt; color: var(--slate); margin-top: 3px; }
+    .doc-header .meta { display: flex; gap: 20px; margin-top: 10px; font-size: 9pt; color: var(--slate); flex-wrap: wrap; }
+    .doc-header .meta strong { color: var(--navy); }
+
+    .badge {
+      display: inline-block; background: #eff6ff; color: var(--blue);
+      border: 1px solid #bfdbfe; border-radius: 4px;
+      font-size: 8pt; font-weight: 600; padding: 2px 7px; margin-left: 6px;
+      vertical-align: middle;
+    }
+    .badge.green  { background: #f0fdf4; color: var(--green);  border-color: #bbf7d0; }
+    .badge.purple { background: #faf5ff; color: var(--purple); border-color: #d8b4fe; }
+    .badge.amber  { background: #fffbeb; color: var(--amber);  border-color: #fcd34d; }
+
+    h2 {
+      font-size: 12pt; font-weight: 700; color: var(--navy);
+      border-left: 4px solid var(--blue); padding-left: 10px;
+      margin: 24px 0 10px;
+    }
+    h3 { font-size: 10.5pt; font-weight: 600; color: var(--navy); margin: 14px 0 5px; }
+    h4 { font-size: 10pt; font-weight: 600; color: var(--navy); margin: 10px 0 4px; }
+    p  { margin-bottom: 9px; font-size: 10pt; }
+    ul, ol { margin: 6px 0 10px 18px; font-size: 9.5pt; color: var(--slate); }
+    li { margin-bottom: 3px; }
+
+    .intro-box {
+      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px;
+      padding: 12px 15px; margin-bottom: 18px; font-size: 10pt;
+    }
+    .intro-box strong { color: var(--blue); }
+
+    /* STEPS */
+    .steps { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+    .step-card {
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 11px 13px; background: var(--light);
+    }
+    .step-card .step-num {
+      font-size: 8.5pt; font-weight: 700; color: var(--blue);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .step-card h4 { font-size: 10pt; font-weight: 700; color: var(--navy); margin: 3px 0 5px; }
+    .step-card .formula {
+      font-family: 'Courier New', monospace; font-size: 7.8pt;
+      background: white; border: 1px solid var(--border); border-radius: 3px;
+      padding: 3px 7px; color: #7c3aed; margin-bottom: 5px;
+    }
+    .step-card p { font-size: 9pt; color: var(--slate); margin: 0 0 3px; }
+    .step-card .src { font-size: 8pt; color: #94a3b8; margin-top: 4px; font-style: italic; }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 8px 0; }
+    th { background: var(--navy); color: white; text-align: left; padding: 6px 9px; font-weight: 600; }
+    td { padding: 5px 9px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:nth-child(even) td { background: var(--light); }
+    td strong { color: var(--navy); }
+    td.doi { font-family: 'Courier New', monospace; font-size: 7.8pt; color: #475569; }
+    td a { color: var(--blue); text-decoration: none; }
+    td.center { text-align: center; }
+    td.good  { color: var(--green); font-weight: 600; }
+    td.ok    { color: var(--amber); font-weight: 600; }
+    td.warn  { color: var(--red);   font-weight: 600; }
+
+    /* KPI BOXES */
+    .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 10px 0; }
+    .kpi {
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 9px 11px; text-align: center;
+    }
+    .kpi .val { font-size: 17pt; font-weight: 700; color: var(--blue); line-height: 1; }
+    .kpi .val.green  { color: var(--green); }
+    .kpi .val.purple { color: var(--purple); }
+    .kpi .lbl { font-size: 8pt; color: var(--slate); margin-top: 3px; }
+
+    /* NKA BOX */
+    .nka-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+    .nka-item {
+      border: 1px solid var(--border); border-radius: 5px;
+      padding: 9px 12px; background: var(--light);
+    }
+    .nka-item .nka-label { font-size: 8.5pt; color: var(--slate); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+    .nka-item .nka-val   { font-size: 13pt; font-weight: 700; color: var(--navy); margin-top: 2px; }
+    .nka-item .nka-note  { font-size: 8pt; color: #94a3b8; margin-top: 2px; }
+
+    /* NOTE */
+    .note {
+      background: #fffbeb; border: 1px solid #fcd34d; border-radius: 5px;
+      padding: 9px 12px; font-size: 9.5pt; color: #78350f; margin: 10px 0;
+    }
+    .note.blue  { background: #eff6ff; border-color: #93c5fd; color: #1e40af; }
+    .note.green { background: #f0fdf4; border-color: #86efac; color: #14532d; }
+
+    /* CODE BLOCK */
+    .code-block {
+      font-family: 'Courier New', monospace; font-size: 7.8pt;
+      background: #f1f5f9; border: 1px solid var(--border); border-radius: 4px;
+      padding: 9px 11px; margin: 7px 0; color: #334155; line-height: 1.5; white-space: pre;
+    }
+
+    /* CONTROLS */
+    .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+    .control-item { display: flex; align-items: flex-start; gap: 7px; font-size: 9.5pt; }
+    .control-item .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--blue); margin-top: 5px; flex-shrink: 0;
+    }
+    .control-item .name  { font-weight: 600; color: var(--navy); }
+    .control-item .range { color: var(--slate); font-size: 8.5pt; }
+
+    /* FEATURE LIST */
+    .feature-list { list-style: none; margin: 8px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .feature-list li { display: flex; align-items: flex-start; gap: 6px; font-size: 9.5pt; }
+    .feature-list li::before { content: "✓"; color: var(--green); font-weight: 700; flex-shrink: 0; }
+
+    /* VALIDATION TABLE */
+    .val-table th { background: #334155; }
+    .val-row-good td { background: #f0fdf4 !important; }
+    .val-row-ok   td { background: #fffbeb !important; }
+
+    /* CONTACT */
+    .contact-box {
+      background: var(--navy); color: white; border-radius: 7px;
+      padding: 15px 18px; margin-top: 20px;
+    }
+    .contact-box h3  { color: white; margin: 0 0 9px; font-size: 11pt; }
+    .contact-box p   { color: #cbd5e1; font-size: 9.5pt; margin: 3px 0; }
+    .contact-box .url {
+      font-family: 'Courier New', monospace; font-size: 9.5pt; color: #7dd3fc;
+      background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 3px;
+      display: inline-block; margin-top: 7px;
+    }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0; }
+    .box {
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 11px 13px; background: var(--light);
+    }
+    .box h4 { color: var(--navy); margin: 0 0 6px; font-size: 10pt; }
+    .box ul { margin: 0 0 0 15px; }
+    .box ul li { font-size: 9pt; color: var(--slate); margin-bottom: 2px; }
+
+    .page-break { page-break-before: always; }
+    .no-break   { break-inside: avoid; }
+
+    @media print {
+      body { padding: 14mm 14mm; font-size: 10pt; }
+      .steps, .kpis, .nka-grid, .two-col { break-inside: avoid; }
+      h2 { break-after: avoid; }
+      .contact-box { break-inside: avoid; }
+      table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+<div class="doc-header">
+  <h1>U9 Impact Explorer
+    <span class="badge">v3.0</span>
+    <span class="badge green">Nested Logit</span>
+    <span class="badge purple">NKA</span>
+    <span class="badge amber">Validierung</span>
+  </h1>
+  <div class="subtitle">Interaktives 4-Stufen-Verkehrsmodell zur Wirkungsanalyse der U9-Entlastungsspange München</div>
+  <div class="meta">
+    <span><strong>Autor:</strong> Gabriel Tsonyev</span>
+    <span><strong>Datum:</strong> April 2026</span>
+    <span><strong>Typ:</strong> Technische Arbeitsprobe / Portfolio</span>
+    <span><strong>Methodik:</strong> Nested Logit · Tanner/Furness · Kapazitäts-Rückkopplung · NKA · Modellvalidierung</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ INTRO ═══════════════════════════ -->
+<div class="intro-box">
+  <strong>Was ist das?</strong> Eine vollständig im Browser lauffähige Implementierung des klassischen 4-Stufen-Verkehrsmodells, angewendet auf die geplante U9-Entlastungsspange München. Alle Berechnungen laufen client-seitig in JavaScript — kein Backend, keine externen APIs. Das Modell implementiert <strong>Nested Logit</strong> (statt MNL), eine kombinierte <strong>Tanner-Impedanzfunktion</strong>, eine iterative <strong>Kapazitäts-Rückkopplung</strong> zwischen Stufe 4 und Stufe 3, einen <strong>NKA-Baustein</strong> nach der Standardisierten Bewertung 2016+ sowie einen <strong>Validierungs-Tab</strong> mit quantitativem Abgleich gegen SrV 2023 und MVG-Betriebsdaten.
+</div>
+
+<!-- ═══════════════════════════ 4-STUFEN-MODELL ═══════════════════════════ -->
+<h2>1 · Methodisches Vorgehen: 4-Stufen-Modell</h2>
+
+<div class="steps">
+  <div class="step-card">
+    <div class="step-num">Stufe 1</div>
+    <h4>Verkehrserzeugung (Trip Generation)</h4>
+    <div class="formula">P_i = Bev_i × (1+Δ) × Wegerate</div>
+    <div class="formula">A_j = (Besch_j × 2,5 + Bev_j × 0,5) × (1+Δ)</div>
+    <p>8 Münchner Verkehrszonen entlang U9-Korridor (Sendling → Schwabing-Freimann). Quellverkehr proportional zur Bevölkerung; Zielverkehr gewichtet aus Beschäftigung (Pendlermagneten) und Bevölkerung (Versorgungsfahrten). Randsummen werden normiert (Σ Production = Σ Attraction).</p>
+    <div class="src">Daten: Statistisches Amt München 2024; Wegerate 3,0/P/Tag nach MiD 2017/SrV München</div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num">Stufe 2</div>
+    <h4>Verkehrsverteilung (Tanner-Impedanz + Furness)</h4>
+    <div class="formula">T_ij = A_i·O_i × B_j·D_j × f(c_ij)</div>
+    <div class="formula">f(c_ij) = c_ij^α × exp(−β·c_ij)  [α=0,5; β=0,10]</div>
+    <p>Doubly-constrained Gravitationsmodell mit Furness-Iteration (max. 50 Iterationen, Konvergenzkriterium &lt;1 %). Die kombinierte <strong>Tanner-Impedanzfunktion</strong> (Potenzterm + Exponentialterm) bildet urbane Kurzstrecken realistischer ab als die rein exponentielle Funktion. Der RMSE der Randsummen wird als Konvergenzqualitätsmaß ausgewiesen.</p>
+    <div class="src">Evans (1971) Transportation · Tanner (1961) · AETRANSPORT Working Paper (2006)</div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num">Stufe 3</div>
+    <h4>Verkehrsmittelwahl (Nested Logit)</h4>
+    <div class="formula">P(m) = P(Nest_m) × exp(V_m/λ) / Σ_{k∈Nest} exp(V_k/λ)</div>
+    <div class="formula">I_Nest = λ × log Σ_{k∈Nest} exp(V_k/λ)  [Logsum]</div>
+    <p><strong>Nested Logit</strong> mit 2 Nests: „Motorisiert" [Auto+ÖPNV, λ=0,7] und „Muskelbetrieben" [Rad+Fuß, λ=0,5]. Überwindet die IIA-Eigenschaft des einfachen MNL — ÖPNV und Auto konkurrieren primär miteinander, nicht mit dem Fahrrad. ASC-Parameter empirisch aus Münchner RP-Daten (Shoman &amp; Moreno 2021).</p>
+    <div class="src">Munizaga et al. (2000) · Shoman &amp; Moreno (2021) Transportation Research Record 2675(5)</div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num">Stufe 4</div>
+    <h4>Umlegung + Kapazitäts-Rückkopplung</h4>
+    <div class="formula">Last_s = Σ_{i,j} T_ij^ÖPNV × f_UBahn × δ_s(i,j)</div>
+    <div class="formula">Penalty = −((Auslastung − 0,9) / 0,6) × 1,0  [wenn > 90 %]</div>
+    <p>All-or-Nothing-Umlegung auf 5 kritische U-Bahn-Abschnitte. <strong>Kapazitäts-Rückkopplung (Weiner 1997):</strong> Das Modell iteriert zwischen Stufe 3 und Stufe 4. Auslastung &gt;90 % erzeugt einen Crowding-Penalty in der ÖPNV-Utility → neue Moduswahl → bis Konvergenz (&lt;0,1 % Änderung im ÖPNV-Anteil, max. 6 Iterationen).</p>
+    <div class="src">Weiner (1997) ResearchGate · Copperman &amp; Pendyala (2011) Maryland DOT</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ NESTED LOGIT DETAIL ═══════════════════════════ -->
+<h2>2 · Nested-Logit-Parameter (Kalibrierung)</h2>
+
+<p>Die Utility-Funktionen der vier Verkehrsmittel orientieren sich an empirisch geschätzten Revealed-Preference-Daten für München (Shoman &amp; Moreno 2021, Tab. 3, Pendler-Segment):</p>
+
+<div class="code-block">V_car   = ASC_car   + β_time × tt_car   + β_cost × cost_car
+V_oepnv = ASC_oepnv + β_time × tt_oepnv + β_cost × cost_oepnv + β_comfort × u9Bonus + crowdingPenalty
+V_bike  = ASC_bike  + β_time × tt_bike  + β_infra × bikeInfra
+V_walk  = ASC_walk  + β_time × tt_walk</div>
+
+<table>
+  <thead><tr><th>Parameter</th><th>Wert</th><th>Herleitung / Quelle</th></tr></thead>
+  <tbody>
+    <tr><td><strong>ASC_car</strong></td><td>0,00 (Referenz)</td><td>MIV als Referenzalternative</td></tr>
+    <tr><td><strong>ASC_oepnv</strong></td><td>+0,40</td><td>ÖPNV hat in München höheren Grundnutzen (dichte Taktung); Shoman &amp; Moreno (2021)</td></tr>
+    <tr><td><strong>ASC_bike</strong></td><td>−0,10</td><td>Geringere Abschreckung durch gute Radinfrastruktur München (vs. Bundesdurchschnitt)</td></tr>
+    <tr><td><strong>ASC_walk</strong></td><td>−0,35</td><td>Fuß für längere Wege unattraktiv</td></tr>
+    <tr><td><strong>β_time</strong></td><td>−0,055 / min</td><td>Empirisch: Shoman &amp; Moreno 2021, Tab. 3 (Münchner Pendler)</td></tr>
+    <tr><td><strong>β_cost</strong></td><td>−0,10 / EUR</td><td>Skaliert auf EUR-Basis vom CHF-Originalwert; Münchner Einkommensniveau</td></tr>
+    <tr><td><strong>β_comfort</strong></td><td>+0,20</td><td>Komfort-Bonus: neue Züge, Kapazitätsreserve (U9-spezifisch)</td></tr>
+    <tr><td><strong>β_infra</strong></td><td>+0,25</td><td>Fahrrad-Infrastrukturbonus (normiert 0–1)</td></tr>
+    <tr><td><strong>λ Motorisiert</strong></td><td>0,70</td><td>Nest Auto+ÖPNV; 0&lt;λ≤1 für Nutzenmaximierungs-Konsistenz; Munizaga (2000)</td></tr>
+    <tr><td><strong>λ Muskelbetrieben</strong></td><td>0,50</td><td>Nest Rad+Fuß; stärkere Substitution zwischen diesen Modi</td></tr>
+  </tbody>
+</table>
+
+<div class="note blue">
+  <strong>Kalibrierungsziel:</strong> Die Parameter wurden so gewählt, dass der Baseline-Modal-Split (ohne U9) möglichst nah an den SrV München 2023-Zielwerten liegt: MIV 34 % · ÖPNV 24 % · Rad 21 % · Fuß 21 %. Quantitativer Abgleich → Validierungs-Tab (Abschnitt 5).
+</div>
+
+<!-- PAGE BREAK -->
+<div class="page-break"></div>
+
+<!-- ═══════════════════════════ NKA ═══════════════════════════ -->
+<h2>3 · Nutzen-Kosten-Analyse (Standardisierte Bewertung 2016+)</h2>
+
+<p>Das Modell berechnet ein vereinfachtes NKV bei Aktivierung des U9-Szenarios. Die Methodik folgt der <strong>Standardisierten Bewertung von Verkehrswegeinvestitionen 2016+</strong> (in Kraft seit 01.07.2022, GVFG-konform), die auch für die tatsächliche U9-Förderantragsstellung Verwendung findet.</p>
+
+<div class="nka-grid">
+  <div class="nka-item">
+    <div class="nka-label">Diskontierungssatz</div>
+    <div class="nka-val">1,7 % p.a.</div>
+    <div class="nka-note">BVWP 2030: „einheitlicher Diskontierungszinssatz"<br>Quelle: bvwp-projekte.de/glossar.html<br><em>Nicht 3 % — das war Version 2006!</em></div>
+  </div>
+  <div class="nka-item">
+    <div class="nka-label">Preisbasis</div>
+    <div class="nka-val">2012</div>
+    <div class="nka-note">Alle Wert- und Kostenansätze in Preisen von 2012<br>Standardisierte Bewertung 2016+ Anhang 1</div>
+  </div>
+  <div class="nka-item">
+    <div class="nka-label">Wert der Reisezeit (gesamt)</div>
+    <div class="nka-val">8,70 €/h</div>
+    <div class="nka-note">Pendler 9,80 €/h · Freizeit 7,20 €/h<br>Anhang 1, Tabelle A3 — Preisbasis 2012</div>
+  </div>
+  <div class="nka-item">
+    <div class="nka-label">Prognosehorizont</div>
+    <div class="nka-val">30 Jahre</div>
+    <div class="nka-note">Standard Standardisierte Bewertung<br>Barwertfaktor bei 1,7 %: ~23,3</div>
+  </div>
+</div>
+
+<h4>Nutzenkomponenten (3 Bausteine nach Fortschreibung 2022):</h4>
+
+<table>
+  <thead><tr><th>#</th><th>Nutzenkomponente</th><th>Formel / Ansatz</th><th>Parameter</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><strong>Reisezeitgewinne</strong></td>
+      <td>Δt [min] × ÖPNV-Fahrten × (1/60) × WdR [€/h] × 330 Jahrestage</td>
+      <td>Δt = 4,5 min/Fahrt, WdR = 8,70 €/h</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>Externe Kosten MIV</strong> (Unfall, Lärm)</td>
+      <td>Modal-Shift-Fahrten × 0,05 €/km × 8,5 km</td>
+      <td>Standardkostenansatz, vereinfacht</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>CO₂-Nutzenbaustein</strong> (neu ab Fortschreibung 2022)</td>
+      <td>Modal-Shift × 1,8 kg CO₂/PKW-Fahrt × 195 €/t CO₂</td>
+      <td>UBA Leitfaden 2022, Preisbasis 2016 (~170 € Preisbasis 2012)</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="code-block">NKV = Barwert(Nutzen) / Gesamtkosten
+Barwert(Nutzen)   = Jahresnutzen × Barwertfaktor(r=1,7%, n=30J)
+Gesamtkosten      = Investition [3,1 Mrd. EUR] + Barwert(ΔBetriebskosten)
+NKV ≥ 1,0         → volkswirtschaftlich gerechtfertigt (GVFG-Förderfähigkeit)
+NKV ≥ 1,5         → sehr gut</div>
+
+<div class="note">
+  <strong>Vereinfachungshinweis:</strong> Ein Produktiv-NKV würde zusätzlich Zuverlässigkeitswirkungen, Fahrtweg-Veränderungen, detaillierte Lärmwirkungen, Unfallkostendifferenzierung und das vollständige Formblattverfahren einschließen. Die hier implementierten Bausteine demonstrieren die Methodik; die Größenordnung des NKV ist jedoch realistisch.
+</div>
+
+<!-- ═══════════════════════════ VALIDIERUNG ═══════════════════════════ -->
+<h2>4 · Modellvalidierung: Quantitativer Realitätsabgleich</h2>
+
+<p>Gute Verkehrsmodelle werden gegen empirische Daten kalibriert und validiert. Der <strong>Validierungs-Tab</strong> der Anwendung zeigt diese Qualitätsprüfung live — hier die Dokumentation der Methodik und Ergebnisse:</p>
+
+<h3>4.1 Modal Split — Modell vs. SrV München 2023</h3>
+
+<table class="val-table">
+  <thead><tr><th>Verkehrsmittel</th><th>SrV 2023 (Zielwert)</th><th>Modell (Baseline)</th><th>Abw. [Pp.]</th><th>Bewertung</th></tr></thead>
+  <tbody>
+    <tr class="val-row-good"><td><strong>MIV (Auto)</strong></td><td class="center">34,0 %</td><td class="center">~33–35 %</td><td class="center">±1 Pp.</td><td class="good">✓ Sehr gut</td></tr>
+    <tr class="val-row-good"><td><strong>ÖPNV</strong></td><td class="center">24,0 %</td><td class="center">~23–25 %</td><td class="center">±1 Pp.</td><td class="good">✓ Sehr gut</td></tr>
+    <tr class="val-row-ok">  <td><strong>Fahrrad</strong></td><td class="center">21,0 %</td><td class="center">~19–22 %</td><td class="center">±2 Pp.</td><td class="ok">~ Akzeptabel</td></tr>
+    <tr class="val-row-ok">  <td><strong>Fuß</strong></td>  <td class="center">21,0 %</td><td class="center">~19–22 %</td><td class="center">±2 Pp.</td><td class="ok">~ Akzeptabel</td></tr>
+  </tbody>
+</table>
+
+<p style="font-size:9pt; color:var(--slate); margin-top:5px;">
+  <strong>Gesamt-RMSE Modal Split:</strong> &lt;2 Prozentpunkte — für ein 8-Zonen-Demonstrationsmodell mit Literatur-Parametern (keine RP/SP-Studie) ein gutes Ergebnis.
+</p>
+
+<h3>4.2 Netzbelastung — Modell vs. MVG-Betriebsdaten 2024</h3>
+
+<table class="val-table">
+  <thead><tr><th>U-Bahn-Abschnitt</th><th>MVG-Ist [Pax/Tag]</th><th>Modell [Pax/Tag]</th><th>Abw.</th><th>Bewertung</th></tr></thead>
+  <tbody>
+    <tr class="val-row-good"><td><strong>Stammstrecke 1 (U3/U6)</strong></td><td class="center">~240.000</td><td class="center">~220–260k</td><td class="center">&lt;10 %</td><td class="good">✓ Sehr gut</td></tr>
+    <tr class="val-row-good"><td><strong>Stammstrecke 2 (U1/U2)</strong></td><td class="center">~200.000</td><td class="center">~180–220k</td><td class="center">&lt;10 %</td><td class="good">✓ Sehr gut</td></tr>
+    <tr class="val-row-ok">  <td><strong>U4/U5 Kern</strong></td>       <td class="center">~120.000</td><td class="center">~100–140k</td><td class="center">&lt;15 %</td><td class="ok">~ Akzeptabel</td></tr>
+    <tr class="val-row-ok">  <td><strong>U6 Nord</strong></td>           <td class="center">~95.000</td> <td class="center">~80–110k</td> <td class="center">&lt;15 %</td><td class="ok">~ Akzeptabel</td></tr>
+  </tbody>
+</table>
+
+<h3>4.3 Konvergenzmetriken (Furness-Iteration)</h3>
+
+<div class="two-col">
+  <div class="box">
+    <h4>Gravitationsmodell-Konvergenz</h4>
+    <ul>
+      <li><strong>Kriterium:</strong> Max. Zeil-/Spaltenfehler &lt;1 %</li>
+      <li><strong>Typisch:</strong> 4–8 Furness-Iterationen</li>
+      <li><strong>RMSE Randsummen:</strong> &lt;2 % (relativ)</li>
+      <li><strong>Methodik:</strong> Evans (1971) — Doubly-Constrained IPF</li>
+    </ul>
+  </div>
+  <div class="box">
+    <h4>Kapazitäts-Rückkopplung Konvergenz</h4>
+    <ul>
+      <li><strong>Kriterium:</strong> Δ ÖPNV-Anteil &lt;0,1 % zwischen Iterationen</li>
+      <li><strong>Max. Iterationen:</strong> 6</li>
+      <li><strong>Auslöser:</strong> Stammstrecke 1 &gt;90 % Auslastung</li>
+      <li><strong>Methodik:</strong> Weiner (1997)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- PAGE BREAK -->
+<div class="page-break"></div>
+
+<!-- ═══════════════════════════ SZENARIEN ═══════════════════════════ -->
+<h2>5 · Szenarien und Interaktive Regler</h2>
+
+<table>
+  <thead><tr><th>Szenario</th><th>Beschreibung</th><th>U9</th><th>Wachstum</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Status quo (ohne U9)</strong></td><td>Heutiger Zustand 2024 — Baseline für alle Vergleiche</td><td>✗</td><td>0 %</td></tr>
+    <tr><td><strong>Mit U9</strong></td><td>U9 in Betrieb, heutige Rahmenbedingungen; NKA und Entlastungsanalyse aktiv</td><td>✓</td><td>0 %</td></tr>
+    <tr><td><strong>Mit U9 + Wachstum 2035</strong></td><td>Bevölkerungsprognose +12 %, höherer Benzinpreis (2,20 €/l), bessere Radinfra</td><td>✓</td><td>+12 %</td></tr>
+    <tr><td><strong>Mobilitätswende 2035</strong></td><td>Ambitioniertes Szenario: 80 % Umweltverbund (Mobilitätsstrategie München)</td><td>✓</td><td>+12 %</td></tr>
+  </tbody>
+</table>
+
+<h4>Interaktive Regler (Sidebar):</h4>
+
+<div class="controls-grid">
+  <div class="control-item"><div class="dot"></div><div><div class="name">U9 an/aus</div><div class="range">Toggle — verändert Routing + Reisezeitmatrizen (Stufe 2–4)</div></div></div>
+  <div class="control-item"><div class="dot"></div><div><div class="name">Bevölkerungswachstum</div><div class="range">0–20 % (wirkt auf Stufe 1: Trip Generation)</div></div></div>
+  <div class="control-item"><div class="dot"></div><div><div class="name">Benzinpreis</div><div class="range">1,20–3,00 €/l (wirkt auf V_car in Stufe 3)</div></div></div>
+  <div class="control-item"><div class="dot"></div><div><div class="name">ÖPNV-Monatsticket</div><div class="range">29–99 € (wirkt auf V_oepnv in Stufe 3)</div></div></div>
+  <div class="control-item"><div class="dot"></div><div><div class="name">Rad-Infrastrukturqualität</div><div class="range">Skala 1–10 → normiert als β_infra-Koeffizient</div></div></div>
+  <div class="control-item"><div class="dot"></div><div><div class="name">Wegerate</div><div class="range">2,0–4,0 Wege/P/Tag (Stufe 1, Grundnachfrage)</div></div></div>
+  <div class="control-item"><div class="dot"></div><div><div class="name">Impedanzparameter β</div><div class="range">0,01–0,30 (Erweitert — Stufe 2, Entfernungsempfindlichkeit)</div></div></div>
+</div>
+
+<!-- ═══════════════════════════ VISUALISIERUNGEN ═══════════════════════════ -->
+<h2>6 · Visualisierungen und Tabs</h2>
+
+<table>
+  <thead><tr><th>Tab</th><th>Inhalt</th><th>Technologie</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Netzbelastung</strong></td><td>Schematisches SVG-Netzdiagramm mit farbkodierter Auslastung; U9 wird bei Aktivierung eingeblendet</td><td>D3.js / SVG</td></tr>
+    <tr><td><strong>Modal Split</strong></td><td>Donut-Diagramm der 4 Modi mit aktuellen Prozentwerten</td><td>Recharts PieChart</td></tr>
+    <tr><td><strong>Geographische Karte</strong></td><td>OpenStreetMap-Hintergrund mit überlagerten Linienabschnitten und Auslastungsfarben</td><td>Leaflet.js</td></tr>
+    <tr><td><strong>Belastungsvergleich</strong></td><td>Balkendiagramm: Modell-Belastung vs. Baseline; Delta visualisiert</td><td>Recharts BarChart</td></tr>
+    <tr><td><strong>OD-Matrix</strong></td><td>8×8-Heatmap der Verkehrsströme zwischen Zonen (farbkodiert)</td><td>CSS-Grid + Interpolation</td></tr>
+    <tr><td><strong>Sensitivitätsanalyse</strong></td><td>Tornado-Diagramm: Einfluss jedes Parameters auf NKV (±10 %-Variation)</td><td>Recharts BarChart</td></tr>
+    <tr><td><strong>Validierung</strong></td><td>Tabellarischer Abgleich Modal Split vs. SrV 2023, Netzbelastung vs. MVG-Daten; RMSE, Konvergenzmetriken</td><td>React-Tabellen + Rechnerlogik</td></tr>
+    <tr><td><strong>Methodik</strong></td><td>Accordeon-Panel: Formelherleitung, Parameter, Vereinfachungen, Literaturquellen für jede Stufe</td><td>React Radix Collapsible</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════ WISSENSCHAFTLICHE QUELLEN ═══════════════════════════ -->
+<h2>7 · Wissenschaftliche Grundlagen und Literaturquellen</h2>
+
+<table>
+  <thead><tr><th>Methode</th><th>Modul</th><th>Quelle</th><th>DOI / Zugang</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Doubly-Constrained Gravitationsmodell (Furness/IPF)</strong></td>
+      <td>tripDistribution.js</td>
+      <td>Evans, S.P. (1971). <em>Transportation</em>, Springer</td>
+      <td class="doi">doi.org/10.1007/BF00166888</td>
+    </tr>
+    <tr>
+      <td><strong>Tanner-Impedanzfunktion</strong> f(c) = c^α × exp(−β·c)</td>
+      <td>tripDistribution.js</td>
+      <td>AETRANSPORT (2006). <em>Alternative Gravity Modelling Approaches</em></td>
+      <td class="doi">aetransport.org/public/downloads/…pdf</td>
+    </tr>
+    <tr>
+      <td><strong>Nested Logit (IIA-konform)</strong> 2 Nests</td>
+      <td>modeChoice.js</td>
+      <td>Munizaga, M. et al. (2000). <em>Mixed Logit vs. Nested Logit and Probit Models</em>, U. Chile</td>
+      <td class="doi">cec.uchile.cl/~dicidet/mmunizaga/mixed_logit.pdf</td>
+    </tr>
+    <tr>
+      <td><strong>Empirische Logit-Parameter München (RP-Daten)</strong></td>
+      <td>calibration.js</td>
+      <td>Shoman, M. &amp; Moreno, A.T. (2021). <em>Transportation Research Record</em> 2675(5), S. 329–338</td>
+      <td class="doi">doi.org/10.1177/0361198121989726</td>
+    </tr>
+    <tr>
+      <td><strong>Kapazitäts-Rückkopplung (Stufe 4→3)</strong></td>
+      <td>modelRunner.js</td>
+      <td>Weiner, E. (1997). <em>Shortcomings of the Conventional Four-Step Process</em></td>
+      <td class="doi">researchgate.net/publication/263423775</td>
+    </tr>
+    <tr>
+      <td><strong>MATSim München (Validierungsreferenz)</strong></td>
+      <td>Kalibrierung (extern)</td>
+      <td>Hörl, S. et al. (2024). <em>PLOS ONE</em>, PMC Open Access</td>
+      <td class="doi">pmc.ncbi.nlm.nih.gov/articles/PMC11565408</td>
+    </tr>
+    <tr>
+      <td><strong>Standardisierte Bewertung 2016+</strong> (NKV, Barwert, WdR)</td>
+      <td>modelRunner.js: berechneNKA()</td>
+      <td>BMV (2022). <em>Standardisierte Bewertung von Verkehrswegeinvestitionen 2016+</em>, in Kraft 01.07.2022</td>
+      <td class="doi">bmv.de/SharedDocs/DE/Anlage/E/standardisierte-bewertung-2016plus-verfahrensanleitung.pdf</td>
+    </tr>
+    <tr>
+      <td><strong>Diskontierungssatz 1,7 % (BVWP 2030)</strong></td>
+      <td>calibration.js: nkaParams</td>
+      <td>BVWP 2030 Methodenhandbuch (BMDV)</td>
+      <td class="doi">bvwp-projekte.de/glossar.html</td>
+    </tr>
+    <tr>
+      <td><strong>Wert der Reisezeit (WdR)</strong> Pendler 9,80 €/h</td>
+      <td>calibration.js: nkaParams.wdrGesamt</td>
+      <td>BMV (2016+). <em>Standardisierte Bewertung Anhang 1</em>, Tab. A3 — Preisbasis 2012</td>
+      <td class="doi">bmv.de/…/standardisierte-bewertung-2016plus-anhang-1.pdf</td>
+    </tr>
+    <tr>
+      <td><strong>CO₂-Vermeidungskosten 195 €/t</strong> (Fortschreibung 2022)</td>
+      <td>modelRunner.js: berechneNKA()</td>
+      <td>FOPS (2022). Fortschreibung Standardisierte Bewertung; UBA Leitfaden 2022</td>
+      <td class="doi">fops.de/wp-content/uploads/2022/07/70.0976_Schlussbericht.pdf</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════ DATENBASIS ═══════════════════════════ -->
+<h2>8 · Datenbasis und Kalibrierungsziele</h2>
+
+<table>
+  <thead><tr><th>Datenpunkt</th><th>Wert</th><th>Quelle</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Modal Split München 2023</strong></td><td>MIV 34 % · ÖPNV 24 % · Rad 21 % · Fuß 21 %</td><td>SrV 2023, muenchenunterwegs.de</td></tr>
+    <tr><td><strong>U-Bahn Jahresfahrgäste 2024</strong></td><td>452 Mio./Jahr</td><td>MVG Pressemeldung 14.01.2025</td></tr>
+    <tr><td><strong>Stammstrecke 1 (U3/U6)</strong></td><td>~240.000 Pax/Tag, Kapazität 320.000</td><td>MVG Betriebsdaten 2024</td></tr>
+    <tr><td><strong>U9 Prognose Kernabschnitt</strong></td><td>90.000 Pax/Tag</td><td>mvg.de/projekte/u-bahn/u9-spange</td></tr>
+    <tr><td><strong>U9 Entlastungswirkung</strong></td><td>bis −44 % auf Stammstrecke 1 (konservativ: −33 %)</td><td>MVG Verkehrsplanung</td></tr>
+    <tr><td><strong>Bevölkerung nach Stadtbezirken</strong></td><td>8 Zonen aus Stadtbezirken 1–25</td><td>Statistisches Amt München 2024</td></tr>
+    <tr><td><strong>Investitionskosten U9</strong></td><td>3,1 Mrd. EUR (Schätzung 2024)</td><td>mvg.de/projekte/u9</td></tr>
+    <tr><td><strong>Wegerate München</strong></td><td>3,0 Wege/Person/Tag</td><td>MiD 2017 (BMVI), SrV München</td></tr>
+    <tr><td><strong>Spitzenstundenfaktor</strong></td><td>12 % vom Tagesverkehr</td><td>Branchenkonvention, BVWP 2030</td></tr>
+    <tr><td><strong>ÖPNV→U-Bahn-Faktor</strong></td><td>55 % der ÖPNV-Fahrten auf U-Bahn</td><td>MVG Jahresbericht 2024</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════ TECHNISCHE UMSETZUNG ═══════════════════════════ -->
+<h2>9 · Technische Umsetzung</h2>
+
+<table>
+  <thead><tr><th>Komponente</th><th>Technologie</th><th>Begründung</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Framework</strong></td><td>React 19 + Vite 8</td><td>Modern, schnell deploybar, produktionsreif</td></tr>
+    <tr><td><strong>Modell-Engine</strong></td><td>Vanilla JavaScript</td><td>Volle Transparenz — jede Formel lesbar, kein Blackbox-Solver</td></tr>
+    <tr><td><strong>Charts</strong></td><td>Recharts 3</td><td>React-nativ, deklarativ, Echtzeit-Update bei Parameter-Änderung</td></tr>
+    <tr><td><strong>Netzwerk-Diagramm</strong></td><td>D3.js (SVG)</td><td>Schematische Netzdarstellung wie in Fachberichten üblich</td></tr>
+    <tr><td><strong>Geographische Karte</strong></td><td>Leaflet + OpenStreetMap</td><td>Georeferenzierte Darstellung der Abschnittsbelastungen</td></tr>
+    <tr><td><strong>Styling</strong></td><td>Tailwind CSS v4</td><td>Professionell, konsistent, wartbar, kein custom CSS nötig</td></tr>
+    <tr><td><strong>Deployment</strong></td><td>GitHub Pages / Hostinger</td><td>Statisches Build (dist/), keine Serverkosten, sofort per URL teilbar</td></tr>
+  </tbody>
+</table>
+
+<div class="code-block">Projektstruktur (src/):
+  data/       zones.js       — 8 Zonen, Reisezeitmatrizen (mit/ohne U9), MIV/Rad/Fuß
+              network.js     — U-Bahn-Linien, kritische Abschnitte, SVG-Pfade
+              calibration.js — Logit-Parameter, Kalibrierungsziele, NKA-Parameter
+              scenarios.js   — 4 Preset-Szenarien mit Default-Parametern
+
+  model/      tripGeneration.js    — Stufe 1: Quelle-/Zielverkehr
+              tripDistribution.js  — Stufe 2: Furness-Iteration, Tanner-Impedanz
+              modeChoice.js        — Stufe 3: Nested Logit (2 Nests)
+              assignment.js        — Stufe 4: All-or-Nothing, Routing-Tabelle
+              modelRunner.js       — Orchestrierung + Feedback-Loop + berechneNKA()
+              sensitivityAnalysis.js — Tornado-Diagramm ±10 %-Variation
+
+  components/ controls/         — Sidebar, ScenarioSelector, ParamSlider
+              visualizations/   — NetworkDiagram, KPICards, ModalSplitChart,
+                                   LoadComparison, MapVisualization, ODMatrix,
+                                   SensitivityAnalysis, ValidationPanel (NEU v3)
+              layout/           — Header, Footer, AboutBanner (NEU v3)
+              methodology/      — MethodologyPanel (Formeln, Vereinfachungen)
+
+  hooks/      useModel.js   — verbindet UI ↔ Modell, verwaltet Feedback-Loop
+  lib/        formatters.js · formulas.js · pdfExport.js</div>
+
+<!-- ═══════════════════════════ BEWUSSTE VEREINFACHUNGEN ═══════════════════════════ -->
+<h2>10 · Bewusste Vereinfachungen gegenüber Produktivmodell</h2>
+
+<div class="two-col">
+  <div class="box">
+    <h4>Diese Vereinfachungen sind implementiert</h4>
+    <ul>
+      <li>8 Zonen statt 500+ Verkehrszellen</li>
+      <li>All-or-Nothing statt stochastischer Gleichgewichtsumlegung (SUE)</li>
+      <li>λ-Parameter aus Literatur, nicht statistisch geschätzt</li>
+      <li>Keine Wegezweck-Differenzierung (Arbeit, Einkauf, Freizeit)</li>
+      <li>Vereinfachtes Routing (keine Umsteigemodellierung)</li>
+      <li>NKA ohne vollständiges Formblattverfahren</li>
+    </ul>
+  </div>
+  <div class="box">
+    <h4>Ein Produktivmodell würde zusätzlich haben</h4>
+    <ul>
+      <li>500+ Verkehrszellen (MVV-Zellsystem München)</li>
+      <li>Empirisch erhobene RP/SP-Daten (eigene Haushaltsbefragung)</li>
+      <li>MATSim-Validierung gegen GPS-Traces</li>
+      <li>SUE-Umlegung (stochastisches Nutzergleichgewicht)</li>
+      <li>Detaillierte Umsteigemodellierung</li>
+      <li>Wegezweck-Differenzierung (3–5 Zwecke)</li>
+    </ul>
+  </div>
+</div>
+
+<div class="note green">
+  <strong>Transparenz als Stärke:</strong> Diese Vereinfachungen sind in der Anwendung im Methodik-Tab explizit dokumentiert. Das zeigt fachliches Urteilsvermögen: Wer die Grenzen seines Modells benennt, versteht es.
+</div>
+
+<!-- ═══════════════════════════ CONTACT ═══════════════════════════ -->
+<div class="contact-box">
+  <h3>Kontakt &amp; Demo-Zugang</h3>
+  <p><strong>Autor:</strong> Gabriel Tsonyev</p>
+  <p><strong>Hintergrund:</strong> IT Business Analyst bei DXC Technology (SBB Cargo, BLS Cargo); B.Sc. Wirtschaftswissenschaften mit Vertiefung Transportökonomie; Erfahrung in Verkehrsplanung, Fahrplankonzeption, Transport-IT und Datenanalyse; SAFe 6 Practitioner, Scrum Master</p>
+  <p style="margin-top: 8px;"><strong>Entwicklungszeit:</strong> Eigeninitiativ entwickelt als Arbeitsprobe — demonstriert Methodenkompetenz in Verkehrsmodellierung und webbasierter Tool-Entwicklung</p>
+  <div class="url">► Live-Demo: gabriel-tsonyev.github.io/u9-impact-explorer/</div>
+</div>
+
+<p style="margin-top: 16px; font-size: 8pt; color: #94a3b8; text-align: center; line-height: 1.6;">
+  <strong>Wissenschaftliche Quellen:</strong> Evans (1971) · Tanner (1961) · AETRANSPORT (2006) · Munizaga et al. (2000) · Shoman &amp; Moreno (2021) · Weiner (1997) · Hörl et al. (2024) · BMV Standardisierte Bewertung 2016+ · BVWP 2030 Methodenhandbuch · UBA Leitfaden 2022<br>
+  <strong>Datenbasis:</strong> MVG · Statistisches Amt München · muenchenunterwegs.de / SrV 2023 · MiD 2017 (BMVI) · bvwp-projekte.de
+</p>
+
+</body>
+</html>
