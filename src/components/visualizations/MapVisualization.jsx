@@ -100,8 +100,6 @@ export function MapVisualization({ segments, withU9 }) {
       layerGroupRef.current = L.layerGroup().addTo(map)
     }
 
-    const map = mapInstanceRef.current
-
     // Atomar alle dynamischen Layer entfernen (LayerGroup statt eachLayer-Iteration)
     layerGroupRef.current.clearLayers()
 
