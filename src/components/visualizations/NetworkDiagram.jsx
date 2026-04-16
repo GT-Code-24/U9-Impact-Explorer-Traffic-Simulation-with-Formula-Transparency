@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { networkPaths } from '../../data/network.js'
-import { criticalSegments } from '../../data/network.js'
 import { getLineWidth, getLineColor } from '../../lib/lineStyle.js'
 
 const LINE_COLORS = {
